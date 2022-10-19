@@ -1,7 +1,26 @@
 syntax = "proto3";
 
-package stream;
+package streams;
 
 //最后生成文件所在的目录stopping/streamgrpc/api/gen/v1
-option go_package="stopping/streamgrpc/api/gen/v1;streampb";
+//这里的包路径需要与protoc 命令中的out目录路径一直，都是性相对与根目录shopping
 
+//以下命令是为了将所有的proto buf生成的go文件都整理放到一起，方便后期服务间调用
+//protoc -I . streams.proto --go_out=paths=source_relative:../../common/gen/v1
+//--go-grpc_out=paths=source_relative:../../common/gen/v1
+
+option go_package="stopping/streamgrpc/api/gen/v1;streamspb";
+
+message StreamRequest {
+    string  Msg = 1;
+}
+
+message StreamResponse {
+    string  Msg = 1;
+}
+
+service StreamService {
+    rpc GetStream(StreamRequest) returns(stream StreamResponse);
+    rpc PutStream(stream StreamRequest) returns(StreamResponse);
+    rpc AllStream(stream StreamRequest) returns(stream StreamResponse);
+}
