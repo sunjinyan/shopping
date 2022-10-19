@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package base;
+
+option go_package="shopping/grpc/protobuf/api/gen/v1;hellopb";
+
+message Empty {
+
+}
+
+message Pong {
+    string Id  = 1;
+}

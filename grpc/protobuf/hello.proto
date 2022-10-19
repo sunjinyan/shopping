@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+import  "google/protobuf/empty.proto";
+
+import  "base.proto";
+
+import "google/protobuf/timestamp.proto"; //内置时间戳 proto 文件所在包
+
+package hello;
+
+option go_package="shopping/grpc/protobuf/api/gen/v1;hellopb";
+
+//protoc -I (input 输入文件夹，点代表当前文件夹) .  hello.gen --go_out=paths=source_relative:./gen/gen/v1 --go-grpc_out=paths=source_relative:./gen/gen/v1
+
+//--go_out 的输出地址
+message HelloRequest {
+
+}
+
+enum Gender {
+    Male = 1;
+    Female = 2;
+}
+
+message HelloResponse {
+    map <string ,string > mp = 1;
+    Gender  g = 2;
+    google.protobuf.Timestamp t = 3; //使用内置时间戳
+}
+
+
+//--go-grpc_out 输出地址
+service Hello{
+    rpc  HelloWorld(HelloRequest) returns (HelloResponse);
+    rpc  Ping(base.Empty) returns (base.Pong); //均使用自定义的Message
+    rpc  Pings(google.protobuf.Empty) returns (base.Pong);//换为了网络的
+}

@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package stream;
+
+//最后生成文件所在的目录stopping/streamgrpc/api/gen/v1
+option go_package="stopping/streamgrpc/api/gen/v1;streampb";
+
