@@ -1,7 +1,10 @@
 package main
 
 import (
+	"OldPackageTest/jaeger_test/otgrpc"
 	"context"
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	"github.com/opentracing/opentracing-go"
 	"net"
 
 	"github.com/uber/jaeger-client-go"
@@ -32,14 +35,24 @@ func main() {
 		},
 		ServiceName: "mxshop",
 	}
-
+	//设置服务端的Tracer 开始
 	tracer, closer, err := cfg.NewTracer(jaegercfg.Logger(jaeger.StdLogger))
 	if err != nil {
 		panic(err)
 	}
+	opentracing.SetGlobalTracer(tracer)
 	defer closer.Close()
 
-	g := grpc.NewServer()
+
+	//grpc.WithUnaryInterceptor(otgrpc.OpenTracingClientInterceptor(opentracing.GlobalTracer()))
+
+	var opts = []grpc.ServerOption{
+		grpc_middleware.WithUnaryServerChain(
+			otgrpc.OpenTracingServerInterceptor(opentracing.GlobalTracer()),
+		),
+	}
+	//设置服务端的Tracer 结束
+	g := grpc.NewServer(opts...)
 	proto.RegisterGreeterServer(g, &Server{})
 	lis, err := net.Listen("tcp", "0.0.0.0:50051")
 	if err != nil {
